@@ -10,6 +10,24 @@
             text-align: center; 
             margin-top: 60px; 
         }
+        #drop-zone { 
+            margin: 20px auto; 
+            padding: 30px; 
+            border: 2px dashed #444; 
+            border-radius: 10px; 
+            width: 80%; 
+            max-width: 500px; 
+            cursor: pointer; 
+            transition: all 0.3s ease;
+        }
+        #drop-zone:hover {
+            border-color: #666;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        #drop-zone.highlight {
+            border-color: #4db8ff;
+            background: rgba(77, 184, 255, 0.1);
+        }
         input { 
             margin: 20px; 
             padding: 10px; 
@@ -42,62 +60,75 @@
 </head>
 <body>
     <h2>Valheim Key Manager Bypasser</h2>
-    <input type="file" id="f" accept=".dll">
-    
-    <div id="status">Upload the DLL of the Key Manager mod</div>
-    <div class="example">DRM patcher for mostly low quailty mods.  Should allow you to use the mod on linux dedicated servers or whatever other restrictions imposed by Key Manager.</div>
-    <a href="https://github.com/themilkman554/Valheim-Key-Manager-Bypasser/blob/main/index.html" target="_blank" class="source-link">Source</a>
-
+    <p class="example">DRM patcher for mostly low quality mods.<br> Should allow you to use the mod on Linux dedicated servers or nullify whatever other restrictions are imposed by Key Manager.</p>
+    <div id="drop-zone">
+        <p>Drag & drop your file here or click to browse</p>
+        <input type="file" id="f" accept=".exe,.dll" />
+    </div>
+    <div id="status">Select a file to patch</div>
+    <p class="example">Example: Valheim_Data\Managed\Some_Mod_Name.dll</p>
+    <a href="https://github.com/themilkman554/Valheim-Key-Manager-Bypasser/blob/main/index.html" target="_blank" class="source-link">Source Code</a>
+    <script src="script.js"></script>
     <script>
-        function h(x) { 
-            return x.match(/.{1,2}/g).map(v => parseInt(v, 16)); 
+        // Add drag and drop functionality
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('f');
+        const statusDiv = document.getElementById('status');
+
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
         }
 
-        function fnd(buf, p) {
-            for (let i = 0; i <= buf.length - p.length; i++) {
-                let m = 1;
-                for (let j = 0; j < p.length; j++) {
-                    if (buf[i + j] != p[j]) { m = 0; break; }
-                }
-                if (m) return i;
+        // Highlight drop zone when item is dragged over it
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            dropZone.classList.add('highlight');
+        }
+
+        function unhighlight() {
+            dropZone.classList.remove('highlight');
+        }
+
+        // Handle dropped files
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length) {
+                fileInput.files = files;
+                // Trigger the change event to process the file
+                fileInput.dispatchEvent(new Event('change'));
             }
-            return -1;
         }
 
-        document.getElementById("f").onchange = e => {
-            const file = e.target.files[0];
-            const status = document.getElementById("status");
-            if (!file) return;
+        // Handle click on drop zone to trigger file input
+        dropZone.addEventListener('click', function() {
+            fileInput.click();
+        });
 
-            status.innerText = "Processing...";
-
-            let r = new FileReader();
-            r.onload = x => {
-                let u = new Uint8Array(x.target.result);
-                let p = h("012B01160D092C0820E54959C8252B06");
-                let i = fnd(u, p);
-
-                if (i == -1) {
-                    status.innerText = "Pattern not found/Mod may not have Key Manager";
-                    status.style.color = "#ff4d4d";
-                    return;
-                }
-
-
-                u[i + 6] = 0x2D;
-                status.innerText = "Success! Patching complete. Starting download...";
-                status.style.color = "#4dff88";
-
-
-                let a = document.createElement("a");
-                a.href = URL.createObjectURL(new Blob([u]));
-                a.download = "patched_" + file.name;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-            };
-            r.readAsArrayBuffer(file);
-        };
+        // Update status when file is selected
+        fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                statusDiv.textContent = `Selected: ${this.files[0].name}`;
+            } else {
+                statusDiv.textContent = 'Select a file to patch';
+            }
+        });
     </script>
 </body>
 </html>
