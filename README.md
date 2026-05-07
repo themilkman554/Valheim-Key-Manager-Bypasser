@@ -88,12 +88,6 @@ Additional patterns can be added to the `magicPatterns` array in `patcher.js`.
 
 ---
 
-## Contributors
-
-![contributors badge](https://readme-contribs.as93.net/contributors/themilkman554/Valheim-Key-Manager-Bypasser?shape=circle&fontSize=10)
-
-Contributions welcome when patching logic needs updating.
-
 ## Acknowledgements
 
 Includes IL patching from:
