@@ -1,134 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Valheim Key Manager Bypasser</title>
-    <style>
-        body { 
-            background: #111; 
-            color: #eee; 
-            font-family: sans-serif; 
-            text-align: center; 
-            margin-top: 60px; 
-        }
-        #drop-zone { 
-            margin: 20px auto; 
-            padding: 30px; 
-            border: 2px dashed #444; 
-            border-radius: 10px; 
-            width: 80%; 
-            max-width: 500px; 
-            cursor: pointer; 
-            transition: all 0.3s ease;
-        }
-        #drop-zone:hover {
-            border-color: #666;
-            background: rgba(255, 255, 255, 0.05);
-        }
-        #drop-zone.highlight {
-            border-color: #4db8ff;
-            background: rgba(77, 184, 255, 0.1);
-        }
-        input { 
-            margin: 20px; 
-            padding: 10px; 
-            background: #222; 
-            color: #fff; 
-            border: 1px solid #444; 
-            border-radius: 5px; 
-            cursor: pointer; 
-        }
-        #status { 
-            margin-top: 15px; 
-            font-weight: bold; 
-        }
-        .example {
-            color: #888;
-            font-size: 0.9em;
-            margin-top: 8px;
-        }
-        .source-link {
-            color: #4db8ff;
-            text-decoration: underline;
-            font-size: 0.9em;
-            margin-top: 6px;
-            display: inline-block;
-        }
-        .source-link:hover {
-            color: #7ac6ff;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚒️ Valheim KeyManager Bypasser</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h2>Valheim Key Manager Bypasser</h2>
-    <p class="example">DRM patcher for mostly low quality mods.<br> Should allow you to use the mod on Linux dedicated servers or nullify whatever other restrictions are imposed by Key Manager.</p>
-    <div id="drop-zone">
-        <p>Drag & drop your file here or click to browse</p>
-        <input type="file" id="f" accept=".exe,.dll" />
+    <div class="container">
+        <header class="header">
+            <h1>⚒️ Valheim KeyManager Bypasser</h1>
+            <p class="subtitle">In-browser DRM bypasser for KeyManager protected mods. No installation required.</p>
+        </header>
+
+        <main class="card">
+            <div id="drop-zone" class="drop-zone">
+                <svg class="drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <p class="drop-label">Drag and drop your .dll here</p>
+                <p class="drop-sub">or click to browse</p>
+                <input type="file" id="f" accept=".exe,.dll" />
+            </div>
+            <p class="hint">Example: <code>Valheim_Server\BepInEx\plugins\{Some_Mod_Name}.dll</code></p>
+            <p class="hint">Patched <code>.dll</code> will be downloaded automatically as <code>patched_{Some_Mod_Name}.dll</code></p>
+            <div id="status" class="status">STATUS: Awaiting file... </div>
+        </main>
+
+        <footer class="footer">
+            <p><a href="https://github.com/themilkman554/Valheim-Key-Manager-Bypasser" target="_blank" rel="noopener noreferrer">Source Code</a></p>
+            <span>MIT License</span>
+        </footer>
     </div>
-    <div id="status">Select a file to patch</div>
-    <p class="example">Example: Valheim_Data\Managed\Some_Mod_Name.dll</p>
-    <a href="https://github.com/themilkman554/Valheim-Key-Manager-Bypasser/blob/main/index.html" target="_blank" class="source-link">Source Code</a>
-    <script src="script.js"></script>
-    <script>
-        // Add drag and drop functionality
-        const dropZone = document.getElementById('drop-zone');
-        const fileInput = document.getElementById('f');
-        const statusDiv = document.getElementById('status');
 
-        // Prevent default drag behaviors
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, preventDefaults, false);
-        });
-
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
-        // Highlight drop zone when item is dragged over it
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropZone.addEventListener(eventName, highlight, false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, unhighlight, false);
-        });
-
-        function highlight() {
-            dropZone.classList.add('highlight');
-        }
-
-        function unhighlight() {
-            dropZone.classList.remove('highlight');
-        }
-
-        // Handle dropped files
-        dropZone.addEventListener('drop', handleDrop, false);
-
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            
-            if (files.length) {
-                fileInput.files = files;
-                // Trigger the change event to process the file
-                fileInput.dispatchEvent(new Event('change'));
-            }
-        }
-
-        // Handle click on drop zone to trigger file input
-        dropZone.addEventListener('click', function() {
-            fileInput.click();
-        });
-
-        // Update status when file is selected
-        fileInput.addEventListener('change', function() {
-            if (this.files.length > 0) {
-                statusDiv.textContent = `Selected: ${this.files[0].name}`;
-            } else {
-                statusDiv.textContent = 'Select a file to patch';
-            }
-        });
-    </script>
+    <script src="patcher.js"></script>
+    <script src="site.js"></script>
 </body>
 </html>
